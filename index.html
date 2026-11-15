@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Krillion Unlimited · dive as much as you like</title>
+  <meta name="description" content="Name an answer. The rarer it is, the deeper you sink. 7 prompts, 25 seconds each, unlimited dives." />
+  <meta name="theme-color" content="#06101f" />
+  <meta property="og:title" content="Krillion Unlimited" />
+  <meta property="og:description" content="Rarer answers sink deeper. No daily limit." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="world" aria-hidden="true"></canvas>
+  <div class="fx fx-dots" aria-hidden="true"></div>
+  <div class="fx fx-scan" aria-hidden="true"></div>
+  <div class="fx fx-vignette" aria-hidden="true"></div>
+
+  <button id="menuBtn" class="icon-btn" aria-label="Menu">
+    <svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="2" y="3" width="12" height="2"/><rect x="2" y="7" width="12" height="2"/><rect x="2" y="11" width="12" height="2"/></svg>
+  </button>
+  <button id="muteBtn" class="icon-btn" aria-label="Toggle sound">
+    <svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="1" y="6" width="3" height="4"/><rect x="4" y="5" width="2" height="6"/><rect x="6" y="3" width="2" height="10"/><g class="waves"><rect x="10" y="6" width="1" height="4"/><rect x="12" y="4" width="1" height="8"/></g><g class="x"><rect x="10" y="5" width="1" height="1"/><rect x="11" y="6" width="1" height="1"/><rect x="12" y="7" width="1" height="2"/><rect x="13" y="6" width="1" height="1"/><rect x="14" y="5" width="1" height="1"/><rect x="11" y="9" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="13" y="9" width="1" height="1"/><rect x="14" y="10" width="1" height="1"/></g></svg>
+  </button>
+
+  <!-- TITLE -->
+  <section id="title" class="screen">
+    <div class="title-top">
+      <h1 class="logo" data-text="KRILLION"><span>KRILLION</span></h1>
+      <div class="sub" id="subTitle">UNLIMITED</div>
+      <p class="tagline">7 prompts · 25 seconds each · rarer answers sink deeper</p>
+    </div>
+    <div class="title-bottom">
+      <details class="howto">
+        <summary>HOW TO PLAY</summary>
+        <ol>
+          <li>You get <b>7 prompts</b>, like <i>"Name a pizza topping."</i></li>
+          <li>Type <b>one answer</b> within <b>25 seconds</b>.</li>
+          <li>The fewer divers who said the same thing, the <b>deeper you sink</b> and the more points you get.</li>
+          <li>Obvious answer? <b>Plankton.</b> Something nobody thought of (that still counts)? <b>One in a krillion.</b></li>
+          <li>No daily limit. Finish a dive and go straight back in.</li>
+        </ol>
+      </details>
+      <button id="startBtn" class="big-btn"><span class="tri">▼</span> BEGIN DESCENT <span class="tri">▼</span></button>
+      <div class="title-meta"><span id="titleMeta">DIVE #1</span><span class="tag">NO DAILY LIMIT ∞</span></div>
+    </div>
+  </section>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="panel"><label>DEPTH</label><b id="depthVal" class="cy">0m</b></div>
+    <div class="progress"><div id="pips"></div><small id="progText">PROMPT 1 OF 7</small></div>
+    <div class="panel right"><label>SCORE</label><b id="scoreVal" class="pk">0</b></div>
+  </div>
+
+  <div id="promptCard" class="card hidden">
+    <div class="kicker" id="promptKicker">PROMPT 1 OF 7</div>
+    <div class="q" id="promptQ"></div>
+    <div class="hint">▼ rarer answers sink deeper ▼</div>
+  </div>
+
+  <div id="countdown" class="hidden">descending · the clock starts in <b id="cdNum">3</b></div>
+
+  <form id="inputBar" class="hidden" autocomplete="off">
+    <div class="timer">
+      <svg viewBox="0 0 60 60"><circle class="trk" cx="30" cy="30" r="26"/><circle id="timerArc" class="arc" cx="30" cy="30" r="26"/></svg>
+      <span id="timerNum">25</span>
+    </div>
+    <div class="field">
+      <input id="answer" maxlength="48" placeholder="type one answer…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Your answer" />
+      <div class="timebar"><i id="timeFill"></i></div>
+    </div>
+    <button id="diveBtn" type="submit">DIVE</button>
+  </form>
+
+  <div id="sinkLabel" class="hidden"><span id="sinkText"></span><i>▼</i></div>
+
+  <!-- REVEAL -->
+  <section id="reveal" class="hidden" aria-live="polite">
+    <img id="rvIcon" class="creature" alt="" />
+    <h2 id="rvName"></h2>
+    <div id="rvAns" class="ans"></div>
+    <div id="rvPts" class="pts"></div>
+    <div id="rvFlavor" class="flavor"></div>
+    <div id="rvCrowd" class="crowd"></div>
+  </section>
+  <button id="nextBtn" class="mid-btn hidden">DESCEND ▼</button>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden"><div class="res-inner" id="resInner"></div></section>
+
+  <!-- MENU -->
+  <aside id="menu" class="hidden" aria-label="Menu">
+    <div class="menu-head"><span>MENU</span><button id="menuClose" aria-label="Close">✕</button></div>
+    <div class="menu-sec">
+      <h4>HOW TO PLAY</h4>
+      <p>Answer each prompt in 25 seconds. The rarer your answer among everyone who has played, the deeper you sink. Seven prompts per dive, as many dives as you like.</p>
+      <ul class="tierlist" id="tierList"></ul>
+    </div>
+    <div class="menu-sec">
+      <h4>YOUR LOGBOOK</h4>
+      <p id="menuStats"></p>
+    </div>
+    <div class="menu-sec btns">
+      <button id="menuSound" class="ghost-btn">SOUND: ON</button>
+      <button id="menuQuit" class="ghost-btn">QUIT THIS DIVE</button>
+      <button id="menuReset" class="ghost-btn danger">RESET MY STATS</button>
+    </div>
+    <p class="menu-foot">A fan-made unlimited take on the daily ocean word game.</p>
+  </aside>
+
+  <div id="toast" class="hidden"></div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

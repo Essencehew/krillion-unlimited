@@ -1,0 +1,13 @@
+{
+  "name": "krillion-unlimited",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Unlimited dives: name rare answers, sink deeper.",
+  "scripts": {
+    "dev": "node dev-server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
